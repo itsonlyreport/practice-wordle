@@ -1,0 +1,13 @@
+# DB 설정
+db.driver=org.mariadb.jdbc.Driver
+db.url=jdbc:mariadb://localhost:3306/wordle_db?characterEncoding=UTF-8
+db.username=
+db.password=
+
+# Google OAuth2
+google.client.id=
+google.client.secret=
+google.redirect.uri=http://localhost:8080/oauth2/google/callback
+
+# Anthropic API
+anthropic.key=
