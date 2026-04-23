@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wordle.mapper.DailyWordMapper">
+
+    <resultMap id="dailyWordMap" type="com.wordle.model.DailyWord">
+        <id     property="id"       column="id" />
+        <result property="word"     column="word" />
+        <result property="playDate" column="play_date" />
+    </resultMap>
+
+    <select id="findByPlayDate" resultMap="dailyWordMap">
+        SELECT * FROM daily_word WHERE play_date = #{playDate}
+    </select>
+
+    <insert id="insertDailyWord">
+        INSERT INTO daily_word (word, play_date)
+        VALUES (#{word}, #{playDate})
+    </insert>
+
+</mapper>

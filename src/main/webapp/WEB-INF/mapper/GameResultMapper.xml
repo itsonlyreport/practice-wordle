@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wordle.mapper.GameResultMapper">
+
+    <insert id="insertGameResult">
+        INSERT INTO game_result (user_id, play_date, try_count, is_win, success_at)
+        VALUES (
+                   #{userId},
+                   #{playDate},
+                   #{tryCount},
+                   #{win},
+                   #{successAt}
+               )
+    </insert>
+
+</mapper>

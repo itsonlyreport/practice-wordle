@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wordle.mapper.UserMapper">
+
+    <resultMap id="userMap" type="com.wordle.model.User">
+        <id     property="id"        column="id" />
+        <result property="username"  column="username" />
+        <result property="password"  column="password" />
+        <result property="email"     column="email" />
+        <result property="googleId"  column="google_id" />
+        <result property="loginType" column="login_type" />
+    </resultMap>
+
+    <select id="findByUsername" resultMap="userMap">
+        SELECT * FROM users WHERE username = #{username}
+    </select>
+
+    <select id="findByGoogleId" resultMap="userMap">
+        SELECT * FROM users WHERE google_id = #{googleId}
+    </select>
+
+    <insert id="insertUser">
+        INSERT INTO users (username, password, email, google_id, login_type)
+        VALUES (#{username}, #{password}, #{email}, #{googleId}, #{loginType})
+    </insert>
+
+</mapper>

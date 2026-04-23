@@ -1,0 +1,27 @@
+.already-done {
+    text-align: center;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.already-done p {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.already-done-sub {
+    font-size: 0.9rem !important;
+    font-weight: 400 !important;
+    color: #818384;
+}
+
+.btn-logout {
+    font-size: 0.8rem;
+    color: #818384;
+    text-decoration: none;
+    float: right;
+}
+
+.btn-logout:hover { color: #fff; }
