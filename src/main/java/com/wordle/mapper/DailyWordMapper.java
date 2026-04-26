@@ -7,6 +7,10 @@ import java.util.List;
 
 public interface DailyWordMapper {
     DailyWord findByPlayDate(LocalDate playDate);
-    void      insertDailyWord(DailyWord dailyWord);
-    List<String> findAllWords();   // ← 기존 단어 목록 조회
+    DailyWord findById(Long id);
+    void insertDailyWord(DailyWord dailyWord);
+    List<String> findAllWords();
+    List<DailyWord> findAllOrderByDate();
+    void updateDailyWord(DailyWord dailyWord);
+    void deleteDailyWord(Long id);
 }

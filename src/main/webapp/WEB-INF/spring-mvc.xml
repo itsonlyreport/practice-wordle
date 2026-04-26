@@ -23,6 +23,22 @@
         <property name="suffix" value=".jsp" />
     </bean>
 
+    <mvc:interceptors>
+        <!-- 관리자 접근 차단 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/admin/**" />
+            <bean class="com.wordle.common.interceptor.AdminInterceptor" />
+        </mvc:interceptor>
+
+        <!-- view prefix 자동 처리 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/css/**" />
+            <mvc:exclude-mapping path="/js/**" />
+            <bean class="com.wordle.common.interceptor.ViewPrefixInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
     <!-- 정적 리소스 -->
     <mvc:resources mapping="/css/**"    location="/resources/css/" />
     <mvc:resources mapping="/js/**"     location="/resources/js/" />

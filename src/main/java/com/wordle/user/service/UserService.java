@@ -1,25 +1,24 @@
 package com.wordle.user.service;
 
+import com.wordle.common.util.EncryptUtil;
 import com.wordle.mapper.UserMapper;
 import com.wordle.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 @Service
 public class UserService {
-    private final UserMapper userMapper;
+    @Autowired
+    private UserMapper  userMapper;
 
-    public UserService(UserMapper userMapper) {
-        this.userMapper = userMapper;
-    }
+    @Autowired
+    private EncryptUtil encryptUtil;
 
     // 일반 로그인
     public User login(String username, String password) {
         var user = userMapper.findByUsername(username);
         if (user == null) return null;
-        if (!user.getPassword().equals(sha256(password))) return null;
+        if (!user.getPassword().equals(encryptUtil.sha256(password))) return null;
         return user;
     }
 
@@ -30,7 +29,7 @@ public class UserService {
 
         var user = User.builder()
                 .username(username)
-                .password(sha256(password))
+                .password(encryptUtil.sha256(password))
                 .email(email)
                 .loginType("LOCAL")
                 .build();
@@ -56,18 +55,50 @@ public class UserService {
         return user;
     }
 
-    // SHA-256 해시
-    public static String sha256(String input) {
-        try {
-            var digest = MessageDigest.getInstance("SHA-256");
-            var bytes  = digest.digest(input.getBytes());
-            var sb     = new StringBuilder();
-            for (byte b : bytes) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 오류", e);
+    // 비밀번호 초기화 (관리자용)
+    public String resetPassword(Long requesterId, Long targetId) {
+
+        // 1. 요청자가 관리자인지 체크
+        var requester = userMapper.findById(requesterId);
+        if (requester == null || !requester.isAdmin()) {
+            throw new IllegalStateException("관리자만 비밀번호를 초기화할 수 있습니다.");
         }
+
+        // 2. 자기 자신 초기화 방지
+        if (requesterId.equals(targetId)) {
+            throw new IllegalArgumentException("자신의 비밀번호는 초기화할 수 없습니다.");
+        }
+
+        // 3. 대상 유저 존재 여부 체크
+        var target = userMapper.findById(targetId);
+        if (target == null) {
+            throw new IllegalArgumentException("존재하지 않는 유저입니다.");
+        }
+
+        // 4. LOCAL 로그인 유저만 초기화 가능
+        if (!"LOCAL".equals(target.getLoginType())) {
+            throw new IllegalArgumentException("구글 로그인 유저는 비밀번호를 초기화할 수 없습니다.");
+        }
+
+        // 5. 임시 비밀번호 생성 및 저장
+        var tempPassword = generateTempPassword();
+        var user = User.builder()
+                .id(targetId)
+                .password(encryptUtil.sha256(tempPassword))
+                .build();
+        userMapper.updatePassword(user);
+
+        return tempPassword;
+    }
+
+    // 임시 비밀번호 생성
+    private String generateTempPassword() {
+        var chars  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var random = new java.util.Random();
+        var sb     = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 }

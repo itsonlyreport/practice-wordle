@@ -5,7 +5,14 @@
 <mapper namespace="com.wordle.mapper.GameResultMapper">
 
     <insert id="insertGameResult">
-        INSERT INTO game_result (user_id, play_date, try_count, is_win, success_at)
+        INSERT
+            INTO game_result (
+                user_id
+                ,play_date
+                ,try_count
+                ,is_win
+                ,success_at
+                )
         VALUES (
                    #{userId},
                    #{playDate},
@@ -15,4 +22,45 @@
                )
     </insert>
 
+    <!-- 날짜별 통계 -->
+    <select id="findDailyStats" resultType="com.wordle.model.dto.DailyStatDto">
+        SELECT
+            play_date                           AS playDate,
+            COUNT(*)                            AS totalCount,
+            SUM(is_win)                         AS winCount,
+            SUM(!is_win)                        AS loseCount,
+            ROUND(AVG(is_win) * 100, 1)         AS winRate,
+            ROUND(AVG(try_count), 1)            AS avgTryCount
+        FROM game_result
+        GROUP BY play_date
+        ORDER BY play_date DESC
+    </select>
+
+    <!-- 유저별 전적 -->
+    <select id="findUserStats" resultType="com.wordle.model.dto.UserStatDto">
+        SELECT
+            gr.user_id                          AS userId,
+            u.username                          AS username,
+            u.email                             AS email,
+            u.login_type                        AS loginType,
+            COUNT(*)                            AS totalCount,
+            SUM(gr.is_win)                      AS winCount,
+            ROUND(AVG(gr.is_win) * 100, 1)      AS winRate,
+            ROUND(AVG(gr.try_count), 1)         AS avgTryCount
+        FROM game_result gr
+            INNER JOIN users u ON gr.user_id = u.id
+        GROUP BY gr.user_id
+        ORDER BY winRate DESC, totalCount DESC
+    </select>
+
+    <!-- 전체 통계 -->
+    <select id="findTotalStats" resultType="com.wordle.model.dto.DailyStatDto">
+        SELECT
+            COUNT(*)                            AS totalCount,
+            SUM(is_win)                         AS winCount,
+            SUM(!is_win)                        AS loseCount,
+            ROUND(AVG(is_win) * 100, 1)         AS winRate,
+            ROUND(AVG(try_count), 1)            AS avgTryCount
+        FROM game_result
+    </select>
 </mapper>

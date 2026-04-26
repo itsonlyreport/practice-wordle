@@ -5,6 +5,7 @@ import com.wordle.model.DailyWord;
 import com.wordle.model.Word;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -32,16 +33,13 @@ public class WordScheduler {
 
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
-    private final HttpClient      httpClient;
-    private final DailyWordMapper dailyWordMapper;
+    private final HttpClient httpClient = HttpClient.newHttpClient();
 
     @Value("${anthropic.key}")
     private String apiKey;
 
-    public WordScheduler(DailyWordMapper dailyWordMapper) {
-        this.dailyWordMapper = dailyWordMapper;
-        this.httpClient      = HttpClient.newHttpClient();
-    }
+    @Autowired
+    private DailyWordMapper dailyWordMapper;
 
     @PostConstruct
     public void start() {

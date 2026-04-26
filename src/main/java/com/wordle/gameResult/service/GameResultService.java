@@ -3,6 +3,7 @@ package com.wordle.gameResult.service;
 import com.wordle.mapper.GameResultMapper;
 import com.wordle.model.GameResult;
 import com.wordle.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -11,11 +12,8 @@ import java.time.LocalDateTime;
 @Service
 public class GameResultService {
 
-    private final GameResultMapper gameResultMapper;
-
-    public GameResultService(GameResultMapper gameResultMapper) {
-        this.gameResultMapper = gameResultMapper;
-    }
+    @Autowired
+    private GameResultMapper gameResultMapper;
 
     // 로그인 유저만 DB 저장
     public void save(User loginUser, int tryCount, boolean isWin) {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordle.model.User;
 import com.wordle.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +22,8 @@ import java.nio.charset.StandardCharsets;
 
 @Controller
 public class AuthController {
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
     @Value("${google.client.id}")
     private String googleClientId;
@@ -31,10 +33,6 @@ public class AuthController {
 
     @Value("${google.redirect.uri}")
     private String googleRedirectUri;
-
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
 
     // 로그인 페이지
     @GetMapping("/")
@@ -58,10 +56,18 @@ public class AuthController {
         var user = userService.login(username, password);
         if (user == null) {
             model.addAttribute("errorMsg", "아이디 또는 비밀번호가 틀렸습니다.");
+            model.addAttribute("googleClientId", googleClientId);
+            model.addAttribute("googleRedirectUri", googleRedirectUri);
             return "login";
         }
 
         session.setAttribute("loginUser", user);
+
+        // ADMIN이면 관리자 페이지로
+        if (user.isAdmin()) {
+            return "redirect:/admin/words";
+        }
+
         return "redirect:/play";
     }
 

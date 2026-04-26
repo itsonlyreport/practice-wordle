@@ -13,5 +13,10 @@ public class User {
     private String password;
     private String email;
     private String googleId;
-    private String loginType;   // "LOCAL" or "GOOGLE"
+    private String loginType;   // LOCAL, GOOGLE
+    private String role;        // USER, ADMIN
+
+    public boolean isAdmin() {
+        return "ADMIN".equals(role);
+    }
 }
