@@ -11,12 +11,25 @@
     </resultMap>
 
     <select id="findByPlayDate" resultMap="dailyWordMap">
-        SELECT * FROM daily_word WHERE play_date = #{playDate}
+        SELECT *
+        FROM daily_word
+        WHERE play_date = #{playDate}
     </select>
 
     <insert id="insertDailyWord">
-        INSERT INTO daily_word (word, play_date)
-        VALUES (#{word}, #{playDate})
+        INSERT
+            INTO daily_word (
+                word
+                ,play_date
+            )
+        VALUES (
+                #{word}
+               ,#{playDate}
+       )
     </insert>
 
+    <select id="findAllWords" resultType="string">
+        SELECT word
+        FROM daily_word
+    </select>
 </mapper>

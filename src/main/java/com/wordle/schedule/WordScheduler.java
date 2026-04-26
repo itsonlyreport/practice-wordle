@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -101,29 +102,59 @@ public class WordScheduler {
 
     private void fetchAndSave(LocalDate targetDate) {
         try {
-            var word = callClaudeApi();
+            // 기존 단어 목록 조회
+            var usedWords = dailyWordMapper.findAllWords();
+            log.info("기존 사용된 단어 수: " + usedWords.size());
+
+            // 중복되지 않는 단어 받아오기 (최대 5번 시도)
+            Word word = null;
+            int maxAttempts = 5;
+
+            for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+                var candidate = callClaudeApi(usedWords);
+                if (!usedWords.contains(candidate.value())) {
+                    word = candidate;
+                    log.info("새 단어 확정 (시도 " + attempt + "회): " + word.value());
+                    break;
+                }
+                log.warning("중복 단어 감지 (시도 " + attempt + "회): " + candidate.value());
+            }
+
+            // 5번 시도 후에도 중복이면 fallback
+            if (word == null) {
+                log.warning("중복 제거 실패 → fallback 사용");
+                word = FALLBACK_WORD;
+            }
+
             var dailyWord = DailyWord.builder()
                     .word(word.value())
                     .playDate(targetDate)
                     .build();
             dailyWordMapper.insertDailyWord(dailyWord);
             log.info("단어 저장 완료: " + targetDate + " → " + word.value());
+
         } catch (Exception e) {
             log.warning("Claude API 실패: " + e.getMessage());
         }
     }
 
-    private Word callClaudeApi() throws Exception {
+    // Claude API 호출 시 기존 단어 목록 전달
+    private Word callClaudeApi(List<String> usedWords) throws Exception {
+        // 기존 단어 목록을 프롬프트에 포함
+        var usedWordsStr = usedWords.isEmpty()
+                ? "없음"
+                : String.join(", ", usedWords);
+
         var requestBody = """
-            {
-                "model": "claude-opus-4-5",
-                "max_tokens": 10,
-                "messages": [{
-                    "role": "user",
-                    "content": "Give me a single random 5-letter English word in uppercase. Reply with ONLY the word, nothing else."
-                }]
-            }
-            """;
+        {
+            "model": "claude-opus-4-5",
+            "max_tokens": 10,
+            "messages": [{
+                "role": "user",
+                "content": "Give me a single random 5-letter English word in uppercase. Reply with ONLY the word, nothing else. Do NOT use any of these words: %s"
+            }]
+        }
+        """.formatted(usedWordsStr);
 
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(CLAUDE_API_URL))
