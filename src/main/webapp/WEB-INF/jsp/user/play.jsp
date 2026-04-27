@@ -12,7 +12,28 @@
     <header>
         <h1>WORDLE</h1>
         <p class="subtitle">5글자 단어를 6번 안에 맞춰보세요!</p>
-        <a href="/logout" class="btn-logout">로그아웃</a>
+        <div class="header-btns">
+            <%-- 관리자면 관리자 페이지 버튼 표시 --%>
+            <c:if test="${loginUser.admin}">
+                <a href="/admin/words" class="btn-admin">⚙️ 관리자</a>
+            </c:if>
+
+
+            <c:choose>
+                <%-- 게스트면 로그인 버튼 --%>
+                <c:when test="${loginUser.loginType == 'GUEST'}">
+                    <a href="/" class="btn-login-link">로그인</a>
+                </c:when>
+                <%-- 로그인 유저면 로그아웃 버튼 --%>
+                <c:when test="${loginUser != null}">
+                    <a href="/logout" class="btn-logout">로그아웃</a>
+                </c:when>
+                <%-- 비로그인이면 로그인 버튼 --%>
+                <c:otherwise>
+                    <a href="/" class="btn-login-link">로그인</a>
+                </c:otherwise>
+            </c:choose>
+        </div>
     </header>
 
     <!-- 오늘 이미 완료한 경우 -->
