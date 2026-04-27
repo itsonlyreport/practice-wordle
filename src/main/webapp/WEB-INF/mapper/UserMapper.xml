@@ -19,8 +19,8 @@
                 ,username
                 ,password
                 ,email
-                ,googleId
-                ,loginType
+                ,google_id
+                ,login_type
                 ,role
         FROM users
         WHERE username = #{username}
@@ -31,8 +31,8 @@
                 ,username
                 ,password
                 ,email
-                ,googleId
-                ,loginType
+                ,google_id
+                ,login_type
                 ,role
         FROM users
         WHERE google_id = #{googleId}
@@ -42,8 +42,8 @@
         SELECT  id
                 ,username
                 ,email
-                ,googleId
-                ,loginType
+                ,google_id
+                ,login_type
                 ,role
         FROM users
         WHERE id = #{id}
@@ -53,8 +53,8 @@
         SELECT  id
                 ,username
                 ,email
-                ,googleId
-                ,loginType
+                ,google_id
+                ,login_type
                 ,role
         FROM users ORDER BY id DESC
     </select>

@@ -15,6 +15,8 @@ public class ViewPrefixInterceptor implements HandlerInterceptor {
 
         if (mav == null || mav.getViewName() == null) return;
         if (mav.getViewName().startsWith("redirect:")) return;
+        if (mav.getViewName().startsWith("admin/")) return;
+        if (mav.getViewName().startsWith("user/")) return;
 
         var viewName = mav.getViewName();
         var uri      = req.getRequestURI();

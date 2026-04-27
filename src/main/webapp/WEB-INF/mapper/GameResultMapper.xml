@@ -23,7 +23,7 @@
     </insert>
 
     <!-- 날짜별 통계 -->
-    <select id="findDailyStats" resultType="com.wordle.model.dto.DailyStatDto">
+    <select id="findDailyStats" resultType="com.wordle.model.dto.DailyStatDTO">
         SELECT
             play_date                           AS playDate,
             COUNT(*)                            AS totalCount,
@@ -37,7 +37,7 @@
     </select>
 
     <!-- 유저별 전적 -->
-    <select id="findUserStats" resultType="com.wordle.model.dto.UserStatDto">
+    <select id="findUserStats" resultType="com.wordle.model.dto.UserStatDTO">
         SELECT
             gr.user_id                          AS userId,
             u.username                          AS username,
@@ -54,7 +54,7 @@
     </select>
 
     <!-- 전체 통계 -->
-    <select id="findTotalStats" resultType="com.wordle.model.dto.DailyStatDto">
+    <select id="findTotalStats" resultType="com.wordle.model.dto.DailyStatDTO">
         SELECT
             COUNT(*)                            AS totalCount,
             SUM(is_win)                         AS winCount,

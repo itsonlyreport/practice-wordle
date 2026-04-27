@@ -51,18 +51,6 @@
         WHERE id = #{id}
     </select>
 
-    <insert id="insertDailyWord">
-        INSERT
-            INTO daily_word (
-                word
-                ,play_date
-            )
-        VALUES (
-                #{word}
-               ,#{playDate}
-               )
-    </insert>
-
     <update id="updateDailyWord">
         UPDATE daily_word
         SET word = #{word}
